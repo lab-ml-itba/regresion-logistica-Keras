@@ -20,7 +20,7 @@ class PlotCallback(keras.callbacks.Callback):
     def plotBoundary(self, model=None):
         if model is None:
             model = self.model
-        eps=1e-15
+        eps=1e-6
         clear_output(wait=True)
         fig=plt.figure(figsize=(20,11))
         gs=GridSpec(3, 3) # 2 rows, 3 columns
