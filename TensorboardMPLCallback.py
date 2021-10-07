@@ -46,7 +46,7 @@ def plotBoundary(model, X, y, X_transformed, X_grid, X_grid_transformed, class_0
     axLossHist = fig.add_subplot(gs[2,1])
     axLogOddsHist = fig.add_subplot(gs[2,0])
     
-    predictions = model.predict_proba(X_transformed).reshape(-1)
+    predictions = model.predict(X_transformed).reshape(-1)
     predictions_0 = predictions[class_0]
     predictions_1 = predictions[class_1]
     log_odds_0 = np.log(eps + predictions_0/(1 - predictions_0 + eps))
@@ -67,11 +67,12 @@ def plotBoundary(model, X, y, X_transformed, X_grid, X_grid_transformed, class_0
     axROC.plot(fpr, tpr)
 
     
-    Z = model.predict_proba(X_grid_transformed).reshape(-1)
+    Z = model.predict(X_grid_transformed).reshape(-1)
     Z = Z.reshape(X_grid[0].shape)
     cm = plt.cm.RdBu
     
     plot_contour = False
+    alpha=0.8
     if plot_contour:
         # Plot contour threshold
         ax=fig.add_subplot(gs[:2,:2]) # Second row, span all columns
@@ -82,14 +83,14 @@ def plotBoundary(model, X, y, X_transformed, X_grid, X_grid_transformed, class_0
         plt.colorbar(cf, ax=ax)
 
         # Plot Points
-        ax.scatter(X[class_1][:,0], X[class_1][:,1], color='b', s=5, alpha=0.5)
-        ax.scatter(X[class_0][:,0], X[class_0][:,1], color='r', s=5, alpha=0.5)
+        ax.scatter(X[class_1][:,0], X[class_1][:,1], color='b', s=5, alpha=alpha)
+        ax.scatter(X[class_0][:,0], X[class_0][:,1], color='r', s=5, alpha=alpha)
     else:
         # Plot Surface
         ax=fig.add_subplot(gs[:2,:2], projection='3d') # Second row, span all columns
-        ax.plot_surface(X_grid[0], X_grid[1], Z, cmap=cm, linewidth=0, antialiased=False, alpha=0.5, vmin=0., vmax=1.)
+        ax.plot_surface(X_grid[0], X_grid[1], Z, cmap=cm, linewidth=0, antialiased=False, alpha=alpha, vmin=0., vmax=1.)
         ax.scatter(X[:,0], X[:,1], y, marker='o', c=y ,cmap=cm, vmin=0., vmax=1., alpha=1.0)
-        # ax.plot_surface(X_grid[0], X_grid[1], 0.5*np.ones(Z.shape), alpha= 0.5, cmap='gray')
+        # ax.plot_surface(X_grid[0], X_grid[1], 0.5*np.ones(Z.shape), alpha= alpha, cmap='gray')
         ax.contour(X_grid[0], X_grid[1], Z, (0.5,), colors='k', linewidths=2)
     
     axAcc.plot(acc)
