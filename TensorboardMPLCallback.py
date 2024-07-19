@@ -226,20 +226,25 @@ class PlotCallbackTB(Callback):
         return
     
     def on_epoch_end(self, epoch, logs={}):
-        print(logs)
-        self.acc.append(logs.get('accuracy'))
-        self.loss.append(logs.get('loss'))
-        plotBoundary(self.model, self.data, self.labels, self.data_transformed, 
-                     (self.X, self.Y), self.grid_data_transformed, self.class_0, 
-                     self.class_1, self.acc, self.loss, self.bins, 
-                     file_writer=self.file_writer, epoch=epoch)
-        return
+        pass
+#         print(logs)
+#         self.acc.append(logs.get('accuracy'))
+#         self.loss.append(logs.get('loss'))
+#         plotBoundary(self.model, self.data, self.labels, self.data_transformed, 
+#                      (self.X, self.Y), self.grid_data_transformed, self.class_0, 
+#                      self.class_1, self.acc, self.loss, self.bins, 
+#                      file_writer=self.file_writer, epoch=epoch)
+#         return
     
     def on_batch_end(self, batch, logs={}):
-        # if batch%self.plots_every_batches == 0:
-        #    self.acc.append(logs.get('acc'))
-        #    self.loss.append(logs.get('loss'))
-        #    plotBoundary(self.model)
+        if batch%self.plots_every_batches == 0:
+            print(logs)
+            self.acc.append(logs.get('accuracy'))
+            self.loss.append(logs.get('loss'))
+            plotBoundary(self.model, self.data, self.labels, self.data_transformed, 
+                         (self.X, self.Y), self.grid_data_transformed, self.class_0, 
+                         self.class_1, self.acc, self.loss, self.bins, 
+                         file_writer=self.file_writer, epoch=batch)
         return
     
     def on_train_end(self, batch, logs=None):
