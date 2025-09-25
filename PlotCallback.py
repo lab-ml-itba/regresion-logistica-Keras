@@ -21,8 +21,12 @@ class PlotCallback(keras.callbacks.Callback):
         if model is None:
             model = self.model
         eps=1e-6
-        clear_output(wait=True)
-        fig=plt.figure(figsize=(20,11))
+        
+        # if not hasattr(self, "fig"):
+        self.fig = plt.figure(figsize=(20, 11))
+        display(self.fig)
+            # self.fig.show()
+        fig=self.fig
         gs=GridSpec(3, 3) # 2 rows, 3 columns
         
         ax=fig.add_subplot(gs[:2,:2]) # Second row, span all columns
@@ -48,6 +52,7 @@ class PlotCallback(keras.callbacks.Callback):
         auROC = roc_auc_score(self.labels, predictions)
         axROC.set_title(f'ROC curve - AuROC:{auROC:.4f}')
         fpr, tpr, thres = roc_curve(self.labels, predictions)
+        
         axROC.plot(fpr, tpr)
         
         ax.scatter(self.data[self.class_1][:,0], self.data[self.class_1][:,1], color='b', s=5, alpha=0.5)
@@ -69,13 +74,33 @@ class PlotCallback(keras.callbacks.Callback):
             
         axLossHist.set_title('Cross Entropy Histogram')
         axLogOddsHist.set_title('Log odds Histogram')
-        plt.show()
+        # self.fig.canvas.draw()
+        # self.fig.canvas.flush_events()
+        # self.fig.canvas.draw()
+        # self.fig.canvas.flush_events()
+        # refresh
+        clear_output(wait=True)
+        display(self.fig)
         
+        
+    
+    def feat_eng_transform(self, X, degree):
+        # polyFeat = PolynomialFeatures(degree=degree, interaction_only=False, include_bias=False)
+        X_poly = self.polyFeat.fit_transform(X)
+        
+        # mu = X_poly.mean(axis=0)
+        # std = X_poly.std(axis=0)
+        # X_poly = (X_poly - mu)/std
+        return X_poly
+
         
     def __init__(self, data, labels, plots_every_batches=100, N = 300, bins=100, degree=1):
-
-        polyFeat = PolynomialFeatures(degree=degree, interaction_only=False, include_bias=False)
-        self.data_poly = polyFeat.fit_transform(data)
+        self.polyFeat = PolynomialFeatures(degree=degree, interaction_only=False, include_bias=False)
+        # polyFeat = PolynomialFeatures(degree=degree, interaction_only=False, include_bias=False)
+        # self.data_poly = polyFeat.fit_transform(data)
+        
+        self.data_poly = self.feat_eng_transform(data, degree)
+        
         
         self.plots_every_batches = plots_every_batches
         self.bins = bins
@@ -89,7 +114,7 @@ class PlotCallback(keras.callbacks.Callback):
         self.X, self.Y = np.meshgrid(X_lin, Y_lin)
         self.Z_shape = self.X.shape
         self.grid_data = np.c_[self.X.flatten(), self.Y.flatten()]
-        self.grid_data_poly = polyFeat.transform(self.grid_data)
+        self.grid_data_poly = self.feat_eng_transform(self.grid_data, degree)
         self.acc = []
         self.loss = []
         self.class_1 = labels == 1

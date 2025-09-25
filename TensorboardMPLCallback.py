@@ -37,8 +37,9 @@ def get_loss_by_sample(y_true, y_pred, eps=1e-15):
 
 def plotBoundary(model, X, y, X_transformed, X_grid, X_grid_transformed, class_0, class_1, acc, loss, bins=100, file_writer=None, epoch=0, n_colors = 100):
     eps=1e-8
-    clear_output(wait=True)
+    # clear_output(wait=True)
     fig=plt.figure(figsize=(20,11))
+    display(fig)
     gs=GridSpec(3, 3) # 2 rows, 3 columns    
     
     axLoss=fig.add_subplot(gs[0,2]) # First row, first column
@@ -176,7 +177,9 @@ def plotBoundary(model, X, y, X_transformed, X_grid, X_grid_transformed, class_0
             
             
     else:
-        plt.show()
+        clear_output(wait=True)
+        display(fig)
+        # plt.show()
 
 
 class PlotCallbackTB(Callback):     
